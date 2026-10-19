@@ -19,6 +19,7 @@
     "client.screen.ControlsScreenMixin",
     "client.screen.SatchelHotbarSwapMixin",
     "client.GuiMixin",
+    "client.SatchelMessageDurationMixin",
     "client.PickBlockMixin"
   ],
   "injectors": {
