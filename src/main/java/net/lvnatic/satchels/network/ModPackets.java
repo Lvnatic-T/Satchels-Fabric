@@ -5,6 +5,7 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import java.util.stream.IntStream;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
@@ -119,7 +120,11 @@ public final class ModPackets {
                 List<ItemStack> current = SatchelData.get(player).getSatchelInventory().getItems();
                 List<ItemStack> previous = LAST_SYNC.get(player.getUUID());
 
-                if (previous != null && ItemStack.listMatches(previous, current)) continue;
+                if (previous != null && previous.size() == current.size() &&
+                        IntStream.range(0, current.size())
+                                .allMatch(i -> ItemStack.matches(previous.get(i), current.get(i)))) {
+                    continue;
+                }
 
                 List<ItemStack> snapshot = current.stream().map(ItemStack::copy).toList();
                 LAST_SYNC.put(player.getUUID(), snapshot);
