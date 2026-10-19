@@ -1,0 +1,12 @@
+{
+  "accessories.slot.satchel": "Satchel",
+  "item.satchels.satchel": "Satchel",
+  "key.satchels.toggle_satchel": "Toggle to Satchel Hotbar",
+  "message.satchels.activated": "§7§oYou reach into your satchel§r",
+  "message.satchels.deactivated": "§7§oYou fasten your satchel§r",
+  "satchels.options.offset": "Satchel Position",
+  "satchels.options.offset.selection": "Slots %s-%s",
+  "satchels.options.offset.tooltip": "The position of the Satchel on your hotbar",
+  "sound.satchels.satchel_rustle": "Satchel rustles",
+  "tag.item.satchels.satchels": "Satchels"
+}

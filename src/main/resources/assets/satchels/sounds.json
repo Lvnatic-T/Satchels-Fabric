@@ -1,0 +1,35 @@
+{
+  "satchel_close": {
+    "subtitle": "sound.satchels.satchel_rustle",
+    "sounds": [
+      {
+        "type": "event",
+        "name": "minecraft:item.bundle.insert",
+        "pitch": 1.1,
+        "volume": 1.0
+      }
+    ]
+  },
+  "satchel_equip": {
+    "subtitle": "sound.satchels.satchel_rustle",
+    "sounds": [
+      {
+        "type": "event",
+        "name": "minecraft:item.bundle.drop_contents",
+        "pitch": 1.0,
+        "volume": 0.75
+      }
+    ]
+  },
+  "satchel_open": {
+    "subtitle": "sound.satchels.satchel_rustle",
+    "sounds": [
+      {
+        "type": "event",
+        "name": "minecraft:item.bundle.remove_one",
+        "pitch": 1.0,
+        "volume": 1.0
+      }
+    ]
+  }
+}

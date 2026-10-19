@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "id": "satchels",
+  "version": "${version}",
+  "name": "Lvnatic's Satchels",
+  "description": "Adds Satchels to your game that let you quickly swap your hotbar!",
+  "authors": [
+    "Lvnatic"
+  ],
+  "contact": {
+    "sources": "https://github.com/Lvnatic-T/Satchels-Fabric",
+    "issues": "https://github.com/Lvnatic-T/Satchels-Fabric/issues"
+  },
+  "license": "MIT",
+  "icon": "icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "net.lvnatic.satchels.Satchels"
+    ],
+    "client": [
+      "net.lvnatic.satchels.client.SatchelsClient"
+    ]
+  },
+  "mixins": [
+    "satchels.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.17.2",
+    "minecraft": "1.21.1",
+    "java": ">=21",
+    "fabric-api": "*",
+    "accessories": "*"
+  }
+}

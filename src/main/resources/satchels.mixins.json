@@ -1,0 +1,27 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "net.lvnatic.satchels.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "player.PlayerMixin",
+    "player.InventoryMixin",
+    "player.PlayerProjectileMixin",
+    "menu.InventoryMenuMixin",
+    "menu.AbstractContainerMenuMixin",
+    "accessor.SlotAccessor",
+    "ItemEntityMixin"
+  ],
+  "client": [
+    "client.screen.InventoryScreenMixin",
+    "client.screen.AbstractContainerScreenMixin",
+    "client.screen.CreativeModeInventoryScreenMixin",
+    "client.screen.ControlsScreenMixin",
+    "client.screen.SatchelHotbarSwapMixin",
+    "client.GuiMixin",
+    "client.PickBlockMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
