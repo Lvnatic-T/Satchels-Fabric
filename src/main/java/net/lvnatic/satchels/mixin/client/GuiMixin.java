@@ -87,6 +87,7 @@ public abstract class GuiMixin {
         SatchelData data = SatchelData.get(player);
 
         if (seed >= 1 && seed <= 9 &&
+                data.canAccess() &&
                 data.isSlotInSatchel(seed - 1) &&
                 (data.isActive() || satchels$slide < 23.0f)) {
             return;

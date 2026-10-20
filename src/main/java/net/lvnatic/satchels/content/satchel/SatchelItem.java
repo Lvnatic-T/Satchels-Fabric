@@ -2,6 +2,8 @@ package net.lvnatic.satchels.content.satchel;
 
 import io.wispforest.accessories.api.AccessoryItem;
 import io.wispforest.accessories.api.slot.SlotReference;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -10,6 +12,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.lvnatic.satchels.ModSounds;
 import net.lvnatic.satchels.api.SatchelAccess;
+import net.lvnatic.satchels.network.packets.SatchelStatusPacketS2C;
 
 public final class SatchelItem extends AccessoryItem {
     public static final int DEFAULT_COLOR = 0xffaf5d2e;
@@ -35,6 +38,17 @@ public final class SatchelItem extends AccessoryItem {
         }
 
         return true;
+    }
+
+    @Override
+    public void onUnequip(ItemStack stack, SlotReference reference) {
+        if (!(reference.entity() instanceof ServerPlayer player)) return;
+
+        SatchelData data = SatchelData.get(player);
+        if (!data.isActive()) return;
+
+        data.setActive(false, false);
+        ServerPlayNetworking.send(player, new SatchelStatusPacketS2C(false));
     }
 
     @Override
