@@ -8,5 +8,7 @@
   "satchels.options.offset.selection": "Slots %s-%s",
   "satchels.options.offset.tooltip": "The position of the Satchel on your hotbar",
   "sound.satchels.satchel_rustle": "Satchel rustles",
-  "tag.item.satchels.satchels": "Satchels"
+  "tag.item.satchels.satchels": "Satchels",
+  "tooltip.satchels.storage": "Adds 6 extra inventory slots",
+  "tooltip.satchels.toggle": "Press %s to switch hotbars"
 }

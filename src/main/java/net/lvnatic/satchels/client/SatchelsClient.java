@@ -8,6 +8,8 @@ import net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.LivingEntityFeatureRendererRegistrationCallback;
+import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
@@ -64,6 +66,24 @@ public final class SatchelsClient implements ClientModInitializer {
                 GLFW.GLFW_KEY_V,
                 KeyMapping.CATEGORY_INVENTORY
         ));
+
+        ItemTooltipCallback.EVENT.register((stack, context, type, tooltip) -> {
+            if (!stack.is(ModItems.SATCHEL)) return;
+
+            tooltip.add(
+                    Component.translatable("tooltip.satchels.storage")
+                            .withStyle(ChatFormatting.GRAY)
+            );
+
+            tooltip.add(
+                    Component.translatable(
+                            "tooltip.satchels.toggle",
+                            toggleSatchel.getTranslatedKeyMessage()
+                                    .copy()
+                                    .withStyle(ChatFormatting.YELLOW)
+                    ).withStyle(ChatFormatting.GRAY)
+            );
+        });
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (client.player != lastPlayer) {
