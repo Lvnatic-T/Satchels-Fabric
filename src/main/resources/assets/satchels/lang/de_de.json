@@ -1,0 +1,14 @@
+{
+  "accessories.slot.satchel": "Umhängetasche",
+  "item.satchels.satchel": "Umhängetasche",
+  "key.satchels.toggle_satchel": "Taschen-Hotbar umschalten",
+  "message.satchels.activated": "§7§oDu greifst in deine Tasche§r",
+  "message.satchels.deactivated": "§7§oDu schließt deine Tasche§r",
+  "satchels.options.offset": "Taschenposition",
+  "satchels.options.offset.selection": "Plätze %s-%s",
+  "satchels.options.offset.tooltip": "Die Position der Tasche in deiner Hotbar",
+  "sound.satchels.satchel_rustle": "Tasche raschelt",
+  "tag.item.satchels.satchels": "Umhängetaschen",
+  "tooltip.satchels.storage": "Fügt 6 zusätzliche Inventarplätze hinzu",
+  "tooltip.satchels.toggle": "Drücke %s, um die Hotbar zu wechseln"
+}
