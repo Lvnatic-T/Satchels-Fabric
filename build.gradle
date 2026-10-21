@@ -44,6 +44,7 @@ dependencies {
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
     modImplementation "io.wispforest:accessories-fabric:${project.accessories_version}"
     modCompileOnly "maven.modrinth:ouNrBQtq:nHhuPdda"
+    modCompileOnly "maven.modrinth:9jxwkYQL:ZLVrtF0Q"
 }
 
 java {

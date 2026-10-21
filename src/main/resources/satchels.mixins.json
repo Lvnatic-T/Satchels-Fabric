@@ -12,7 +12,9 @@
     "menu.AbstractContainerMenuMixin",
     "accessor.SlotAccessor",
     "ItemEntityMixin",
-    "compat.SophisticatedBackpacksItemMixin"
+    "compat.SophisticatedBackpacksItemMixin",
+    "compat.SophisticatedCoreMenuMixin",
+    "compat.SophisticatedBackpacksContextAccessor"
   ],
   "client": [
     "client.screen.InventoryScreenMixin",
@@ -22,7 +24,8 @@
     "client.screen.SatchelHotbarSwapMixin",
     "client.GuiMixin",
     "client.SatchelMessageDurationMixin",
-    "client.PickBlockMixin"
+    "client.PickBlockMixin",
+    "compat.SophisticatedCoreScreenMixin"
   ],
   "injectors": {
     "defaultRequire": 1

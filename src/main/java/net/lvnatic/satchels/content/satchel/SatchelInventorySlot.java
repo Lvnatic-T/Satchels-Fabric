@@ -7,7 +7,7 @@ import net.lvnatic.satchels.mixin.accessor.SlotAccessor;
 
 public class SatchelInventorySlot extends Slot {
     private final SatchelData satchelData;
-    private final int baseX;
+    private int baseX;
 
     public SatchelInventorySlot(SatchelInventory inventory, int slot, int x, int y) {
         super(inventory, slot, x, y);
@@ -18,6 +18,12 @@ public class SatchelInventorySlot extends Slot {
 
     public void updateX() {
         ((SlotAccessor) this).satchels$setX(baseX + satchelData.getHotbarOffset() * 18);
+    }
+
+    public void setBasePosition(int x, int y) {
+        this.baseX = x;
+        this.y = y;
+        updateX();
     }
 
     @Override

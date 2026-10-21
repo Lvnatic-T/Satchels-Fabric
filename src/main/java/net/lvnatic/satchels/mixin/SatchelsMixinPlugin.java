@@ -20,9 +20,7 @@ public final class SatchelsMixinPlugin implements IMixinConfigPlugin {
 
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
-        if (mixinClassName.equals(
-                "net.lvnatic.satchels.mixin.compat.SophisticatedBackpacksItemMixin"
-        )) {
+        if (mixinClassName.startsWith("net.lvnatic.satchels.mixin.compat.Sophisticated")) {
             return FabricLoader.getInstance().isModLoaded("sophisticatedbackpacks");
         }
 
