@@ -3,6 +3,7 @@
   "minVersion": "0.8",
   "package": "net.lvnatic.satchels.mixin",
   "compatibilityLevel": "JAVA_21",
+  "plugin": "net.lvnatic.satchels.mixin.SatchelsMixinPlugin",
   "mixins": [
     "player.PlayerMixin",
     "player.InventoryMixin",
@@ -10,7 +11,8 @@
     "menu.InventoryMenuMixin",
     "menu.AbstractContainerMenuMixin",
     "accessor.SlotAccessor",
-    "ItemEntityMixin"
+    "ItemEntityMixin",
+    "compat.SophisticatedBackpacksItemMixin"
   ],
   "client": [
     "client.screen.InventoryScreenMixin",
