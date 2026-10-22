@@ -1,14 +1,18 @@
 {
   "accessories.slot.satchel": "Bolso",
   "item.satchels.satchel": "Bolso",
-  "key.satchels.toggle_satchel": "Cambiar a la barra del bolso",
-  "message.satchels.activated": "§7§oBuscas algo en tu bolso§r",
+  "key.satchels.toggle_satchel": "Cambiar a la barra de ítems del bolso",
+  "message.satchels.activated": "§7§oMetes la mano en tu bolso§r",
   "message.satchels.deactivated": "§7§oCierras tu bolso§r",
+  "satchels.options.gui_animation": "Animación de la barra del bolso",
+  "satchels.options.gui_animation.tooltip": "Activa la animación al abrir y cerrar la barra del bolso",
   "satchels.options.offset": "Posición del bolso",
   "satchels.options.offset.selection": "Ranuras %s-%s",
-  "satchels.options.offset.tooltip": "Posición del bolso en la barra de acceso rápido",
+  "satchels.options.offset.tooltip": "Posición del bolso en la barra de ítems",
+  "satchels.options.shift_swap": "Intercambio con Mayús",
+  "satchels.options.shift_swap.tooltip": "En el inventario, mantén presionada Mayús y usa una tecla de la barra de ítems para intercambiar objetos con el bolso",
   "sound.satchels.satchel_rustle": "El bolso hace ruido al moverse",
   "tag.item.satchels.satchels": "Bolsos",
-  "tooltip.satchels.storage": "Añade 6 espacios adicionales al inventario",
-  "tooltip.satchels.toggle": "Pulsa %s para cambiar de barra de acceso rápido"
+  "tooltip.satchels.storage": "Agrega 6 espacios adicionales al inventario",
+  "tooltip.satchels.toggle": "Presiona %s para cambiar de barra de ítems"
 }

@@ -1,3 +1,4 @@
+
 package net.lvnatic.satchels.client;
 
 import net.fabricmc.loader.api.FabricLoader;
@@ -94,7 +95,7 @@ public final class SatchelsClientConfig {
         if (satchelOffset == offset) return;
 
         satchelOffset = offset;
-        saveOffset();
+        saveSetting("gameplay", "satchel_offset", Integer.toString(offset));
 
         Minecraft minecraft = Minecraft.getInstance();
         if (minecraft.player == null) return;
@@ -104,6 +105,20 @@ public final class SatchelsClientConfig {
         if (minecraft.getConnection() != null) {
             ClientPlayNetworking.send(new SatchelOffsetUpdatePacketC2S(offset));
         }
+    }
+
+    public static void updateShiftSwap(boolean enabled) {
+        if (shiftSwap == enabled) return;
+
+        shiftSwap = enabled;
+        saveSetting("gameplay", "shift_swap", Boolean.toString(enabled));
+    }
+
+    public static void updateGuiAnimation(boolean enabled) {
+        if (guiAnimation == enabled) return;
+
+        guiAnimation = enabled;
+        saveSetting("rendering", "gui_animation", Boolean.toString(enabled));
     }
 
     private static void loadLegacyOffset() {
@@ -141,49 +156,75 @@ public final class SatchelsClientConfig {
         }
     }
 
-    private static void saveOffset() {
+    private static void saveSetting(String section, String key, String value) {
         if (!Files.exists(FILE)) {
             saveNew();
             return;
         }
 
         try {
-            List<String> lines = new ArrayList<>(Files.readAllLines(FILE, StandardCharsets.UTF_8));
+            List<String> lines = new ArrayList<>(
+                    Files.readAllLines(FILE, StandardCharsets.UTF_8)
+            );
 
-            boolean inGameplay = false;
-            int insertAt = -1;
+            int sectionStart = -1;
+            int sectionEnd = lines.size();
 
             for (int i = 0; i < lines.size(); i++) {
-                String value = stripComment(lines.get(i)).trim();
+                String line = stripComment(lines.get(i)).trim();
 
-                if (value.startsWith("[") && value.endsWith("]")) {
-                    if (inGameplay) {
-                        insertAt = i;
-                        break;
-                    }
+                if (!line.startsWith("[") || !line.endsWith("]")) continue;
 
-                    inGameplay = value.equals("[gameplay]");
-                    continue;
+                if (sectionStart >= 0) {
+                    sectionEnd = i;
+                    break;
                 }
 
-                if (!inGameplay) continue;
-
-                int separator = value.indexOf('=');
-
-                if (separator >= 0 &&
-                        value.substring(0, separator).trim().equals("satchel_offset")) {
-                    lines.set(i, "satchel_offset = " + satchelOffset);
-                    Files.write(FILE, lines, StandardCharsets.UTF_8);
-                    return;
+                if (line.equals("[" + section + "]")) {
+                    sectionStart = i;
                 }
             }
 
-            if (inGameplay) {
-                lines.add(insertAt >= 0 ? insertAt : lines.size(), "satchel_offset = " + satchelOffset);
+            if (sectionStart >= 0) {
+                for (int i = sectionStart + 1; i < sectionEnd; i++) {
+                    String line = stripComment(lines.get(i)).trim();
+                    int separator = line.indexOf('=');
+
+                    if (separator < 0) continue;
+
+                    String existingKey = line.substring(0, separator).trim();
+                    if (!existingKey.equals(key)) continue;
+
+                    String original = lines.get(i);
+                    int commentStart = original.indexOf('#');
+
+                    String comment = commentStart >= 0
+                            ? original.substring(commentStart).trim()
+                            : "";
+
+                    lines.set(
+                            i,
+                            key + " = " + value + (comment.isEmpty() ? "" : " " + comment)
+                    );
+
+                    Files.write(FILE, lines, StandardCharsets.UTF_8);
+                    return;
+                }
+
+                int insertAt = sectionEnd;
+
+                while (insertAt > sectionStart + 1 && lines.get(insertAt - 1).isBlank()) {
+                    insertAt--;
+                }
+
+                lines.add(insertAt, key + " = " + value);
             } else {
-                lines.add("");
-                lines.add("[gameplay]");
-                lines.add("satchel_offset = " + satchelOffset);
+                if (!lines.isEmpty() && !lines.get(lines.size() - 1).isBlank()) {
+                    lines.add("");
+                }
+
+                lines.add("[" + section + "]");
+                lines.add(key + " = " + value);
             }
 
             Files.write(FILE, lines, StandardCharsets.UTF_8);

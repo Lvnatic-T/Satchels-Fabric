@@ -1,3 +1,4 @@
+
 package net.lvnatic.satchels.mixin.client.screen;
 
 import net.minecraft.client.OptionInstance;
@@ -19,16 +20,42 @@ public abstract class ControlsScreenMixin extends OptionsSubScreen {
     }
 
     @Inject(method = "addOptions", at = @At("TAIL"))
-    private void satchels$addOffsetOption(CallbackInfo ci) {
+    private void satchels$addOptions(CallbackInfo ci) {
         if (this.list == null) return;
 
-        this.list.addSmall(new OptionInstance<>(
+        OptionInstance<Integer> offset = new OptionInstance<>(
                 "satchels.options.offset",
-                OptionInstance.cachedConstantTooltip(Component.translatable("satchels.options.offset.tooltip")),
-                (component, value) -> Component.translatable("satchels.options.offset.selection", value + 1, value + 6),
+                OptionInstance.cachedConstantTooltip(
+                        Component.translatable("satchels.options.offset.tooltip")
+                ),
+                (component, value) -> Component.translatable(
+                        "satchels.options.offset.selection",
+                        value + 1,
+                        value + 6
+                ),
                 new OptionInstance.ClampingLazyMaxIntRange(0, () -> 3, 3),
                 SatchelsClientConfig.getSatchelOffset(),
                 SatchelsClientConfig::updateOffset
-        ));
+        );
+
+        OptionInstance<Boolean> shiftSwap = OptionInstance.createBoolean(
+                "satchels.options.shift_swap",
+                OptionInstance.cachedConstantTooltip(
+                        Component.translatable("satchels.options.shift_swap.tooltip")
+                ),
+                SatchelsClientConfig.shouldSwapWithShiftKey(),
+                SatchelsClientConfig::updateShiftSwap
+        );
+
+        OptionInstance<Boolean> guiAnimation = OptionInstance.createBoolean(
+                "satchels.options.gui_animation",
+                OptionInstance.cachedConstantTooltip(
+                        Component.translatable("satchels.options.gui_animation.tooltip")
+                ),
+                SatchelsClientConfig.shouldAnimateGUI(),
+                SatchelsClientConfig::updateGuiAnimation
+        );
+
+        this.list.addSmall(offset, shiftSwap, guiAnimation);
     }
 }
