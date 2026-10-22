@@ -1,0 +1,14 @@
+{
+  "accessories.slot.satchel": "Bolso",
+  "item.satchels.satchel": "Bolso",
+  "key.satchels.toggle_satchel": "Cambiar a la barra del bolso",
+  "message.satchels.activated": "§7§oBuscas algo en tu bolso§r",
+  "message.satchels.deactivated": "§7§oCierras tu bolso§r",
+  "satchels.options.offset": "Posición del bolso",
+  "satchels.options.offset.selection": "Ranuras %s-%s",
+  "satchels.options.offset.tooltip": "Posición del bolso en la barra de acceso rápido",
+  "sound.satchels.satchel_rustle": "El bolso hace ruido al moverse",
+  "tag.item.satchels.satchels": "Bolsos",
+  "tooltip.satchels.storage": "Añade 6 espacios adicionales al inventario",
+  "tooltip.satchels.toggle": "Pulsa %s para cambiar de barra de acceso rápido"
+}
