@@ -10,6 +10,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import net.lvnatic.satchels.content.satchel.SatchelData;
 import net.lvnatic.satchels.content.satchel.SatchelInventory;
+import net.lvnatic.satchels.content.satchel.SatchelStorageRules;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -71,7 +72,7 @@ public abstract class InventoryMixin {
         if (sourceSlot < 9 || sourceSlot >= items.size()) return;
 
         ItemStack sourceStack = items.get(sourceSlot);
-        if (sourceStack.isEmpty()) return;
+        if (sourceStack.isEmpty() || !SatchelStorageRules.canStore(sourceStack)) return;
 
         SatchelInventory satchelInventory = data.getSatchelInventory();
 

@@ -33,7 +33,20 @@ public class SatchelInventorySlot extends Slot {
 
     @Override
     public boolean mayPlace(ItemStack stack) {
-        return satchelData.canAccess();
+        return satchelData.canAccess() && SatchelStorageRules.canStore(stack);
+    }
+
+    @Override
+    public int getMaxStackSize(ItemStack stack) {
+        if (!SatchelStorageRules.canStore(stack)) {
+            ItemStack stored = getItem();
+
+            return ItemStack.isSameItemSameComponents(stored, stack)
+                    ? stored.getCount()
+                    : 0;
+        }
+
+        return super.getMaxStackSize(stack);
     }
 
     @Override

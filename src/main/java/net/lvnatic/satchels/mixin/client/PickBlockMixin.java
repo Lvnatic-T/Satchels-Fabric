@@ -7,6 +7,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.lvnatic.satchels.content.satchel.SatchelData;
 import net.lvnatic.satchels.content.satchel.SatchelInventory;
+import net.lvnatic.satchels.content.satchel.SatchelStorageRules;
 import net.lvnatic.satchels.network.packets.ToggleSatchelPacketC2S;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -38,6 +39,11 @@ public abstract class PickBlockMixin {
         }
 
         if (!data.canAccess()) return;
+
+        if (!SatchelStorageRules.canStore(stack)) {
+            satchels$setActive(data, false);
+            return;
+        }
 
         int normalSlot = inventory.findSlotMatchingItem(stack);
         SatchelInventory satchelInventory = data.getSatchelInventory();

@@ -60,6 +60,11 @@ public final class SatchelInventory implements Container, StackedContentsCompati
     }
 
     @Override
+    public boolean canPlaceItem(int slot, ItemStack stack) {
+        return SatchelStorageRules.canStore(stack);
+    }
+
+    @Override
     public void setChanged() {
         parent.getPlayer().getInventory().setChanged();
     }

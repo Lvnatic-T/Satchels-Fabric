@@ -7,6 +7,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.lvnatic.satchels.content.satchel.SatchelData;
 import net.lvnatic.satchels.content.satchel.SatchelInventory;
+import net.lvnatic.satchels.content.satchel.SatchelStorageRules;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -23,7 +24,7 @@ public abstract class ItemEntityMixin {
     private boolean satchels$pickup(Inventory inventory, ItemStack stack, Operation<Boolean> original) {
         SatchelData data = SatchelData.get(inventory.player);
 
-        if (!data.canAccess() || stack.isEmpty()) {
+        if (!data.canAccess() || stack.isEmpty() || !SatchelStorageRules.canStore(stack)) {
             return original.call(inventory, stack);
         }
 

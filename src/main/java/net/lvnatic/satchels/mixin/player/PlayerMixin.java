@@ -10,6 +10,7 @@ import net.minecraft.world.level.Level;
 import net.lvnatic.satchels.content.satchel.IHaveSatchelData;
 import net.lvnatic.satchels.content.satchel.SatchelData;
 import net.lvnatic.satchels.content.satchel.SatchelInventory;
+import net.lvnatic.satchels.content.satchel.SatchelStorageRules;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -65,6 +66,20 @@ public abstract class PlayerMixin extends LivingEntity implements IHaveSatchelDa
         SatchelInventory inventory = data.getSatchelInventory();
         int slot = data.convertToSatchelIndex(selected);
         ItemStack previous = inventory.getItem(slot);
+
+        if (!SatchelStorageRules.canStore(stack)) {
+            boolean existingItem = !previous.isEmpty()
+                    && previous.is(stack.getItem())
+                    && stack.getCount() <= previous.getCount();
+
+            if (!existingItem) {
+                inventory.setItem(slot, ItemStack.EMPTY);
+                player.getInventory().placeItemBackInInventory(stack.copy());
+                this.onEquipItem(equipmentSlot, previous, ItemStack.EMPTY);
+                ci.cancel();
+                return;
+            }
+        }
 
         inventory.setItem(slot, stack);
         this.onEquipItem(equipmentSlot, previous, stack);
