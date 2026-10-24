@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
+    "satchels:satchel",
     "minecraft:chest",
     "minecraft:trapped_chest",
     "minecraft:ender_chest",
