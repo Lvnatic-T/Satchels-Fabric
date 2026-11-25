@@ -1,11 +1,11 @@
 package net.lvnatic.satchels.network;
 
+import net.fabricmc.fabric.api.entity.event.v1.ServerEntityWorldChangeEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import java.util.stream.IntStream;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.IntStream;
 
 public final class ModPackets {
     private static final Map<UUID, List<ItemStack>> LAST_SYNC = new HashMap<>();
@@ -107,13 +108,21 @@ public final class ModPackets {
             ServerPlayNetworking.send(handler.player, new SatchelStatusPacketS2C(data.isActive()));
         });
 
+        ServerEntityWorldChangeEvents.AFTER_PLAYER_CHANGE_WORLD.register((player, origin, destination) -> {
+            SatchelData data = SatchelData.get(player);
+            ServerPlayNetworking.send(player, new SatchelStatusPacketS2C(data.isActive()));
+        });
+
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) ->
                 LAST_SYNC.remove(handler.player.getUUID())
         );
 
-        ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer, newPlayer, alive) ->
-                LAST_SYNC.remove(newPlayer.getUUID())
-        );
+        ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer, newPlayer, alive) -> {
+            LAST_SYNC.remove(newPlayer.getUUID());
+
+            SatchelData data = SatchelData.get(newPlayer);
+            ServerPlayNetworking.send(newPlayer, new SatchelStatusPacketS2C(data.isActive()));
+        });
 
         ServerTickEvents.END_SERVER_TICK.register(server -> {
             for (var player : server.getPlayerList().getPlayers()) {
