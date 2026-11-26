@@ -1,9 +1,12 @@
 package net.lvnatic.satchels.mixin.menu;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 import net.lvnatic.satchels.content.satchel.SatchelData;
 import net.lvnatic.satchels.content.satchel.SatchelInventory;
 import net.lvnatic.satchels.content.satchel.SatchelInventorySlot;
@@ -53,5 +56,39 @@ public abstract class AbstractContainerMenuMixin {
                     y
             ));
         }
+    }
+
+    @WrapOperation(
+            method = "moveItemStackTo",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/world/inventory/Slot;getItem()Lnet/minecraft/world/item/ItemStack;"
+            )
+    )
+    private ItemStack satchels$skipQuickMoveMerging(Slot slot, Operation<ItemStack> original) {
+        if (slot instanceof SatchelInventorySlot) {
+            return ItemStack.EMPTY;
+        }
+
+        return original.call(slot);
+    }
+
+    @WrapOperation(
+            method = "moveItemStackTo",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/world/inventory/Slot;mayPlace(Lnet/minecraft/world/item/ItemStack;)Z"
+            )
+    )
+    private boolean satchels$skipQuickMoveInsertion(
+            Slot slot,
+            ItemStack stack,
+            Operation<Boolean> original
+    ) {
+        if (slot instanceof SatchelInventorySlot) {
+            return false;
+        }
+
+        return original.call(slot, stack);
     }
 }
