@@ -11,6 +11,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.player.StackedContents;
 import net.minecraft.world.inventory.StackedContentsCompatible;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.ItemContainerContents;
 
 import java.util.List;
 
@@ -66,7 +67,7 @@ public final class SatchelInventory implements Container, StackedContentsCompati
 
     @Override
     public void setChanged() {
-        parent.getPlayer().getInventory().setChanged();
+        parent.onInventoryChanged();
     }
 
     @Override
@@ -76,25 +77,24 @@ public final class SatchelInventory implements Container, StackedContentsCompati
 
     @Override
     public void clearContent() {
-        for (int i = 0; i < SIZE; i++) {
-            items.set(i, ItemStack.EMPTY);
-        }
+        for (int i = 0; i < SIZE; i++) items.set(i, ItemStack.EMPTY);
         setChanged();
+    }
+
+    public void loadFrom(ItemContainerContents contents) {
+        contents.copyInto(items);
+        parent.getPlayer().getInventory().setChanged();
     }
 
     @Override
     public void fillStackedContents(StackedContents contents) {
-        for (ItemStack stack : items) {
-            contents.accountSimpleStack(stack);
-        }
+        for (ItemStack stack : items) contents.accountSimpleStack(stack);
     }
 
     public void dropAll(boolean died) {
         for (int i = 0; i < SIZE; i++) {
             ItemStack stack = removeItemNoUpdate(i);
-            if (!stack.isEmpty()) {
-                parent.getPlayer().drop(stack, died, !died);
-            }
+            if (!stack.isEmpty()) parent.getPlayer().drop(stack, died, !died);
         }
         setChanged();
     }
@@ -128,6 +128,7 @@ public final class SatchelInventory implements Container, StackedContentsCompati
                 ItemStack.parse(provider, itemTag).ifPresent(stack -> items.set(slot, stack));
             }
         }
+        setChanged();
     }
 
     public List<ItemStack> getItems() {

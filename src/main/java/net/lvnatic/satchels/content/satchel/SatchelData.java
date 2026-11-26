@@ -1,13 +1,18 @@
 package net.lvnatic.satchels.content.satchel;
 
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.ItemContainerContents;
 import net.lvnatic.satchels.ModSounds;
 import net.lvnatic.satchels.api.SatchelAccess;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public final class SatchelData {
@@ -15,6 +20,9 @@ public final class SatchelData {
 
     private final Player player;
     private final SatchelInventory satchelInventory;
+    private ItemStack boundStack = ItemStack.EMPTY;
+    private List<ItemStack> savedSnapshot = List.of();
+    private CompoundTag legacyInventory;
     private int hotbarOffset;
     private boolean active;
 
@@ -88,23 +96,113 @@ public final class SatchelData {
         );
     }
 
-    public void copyFrom(SatchelData original) {
-        List<ItemStack> items = original.satchelInventory.getItems();
+    public void bind(ItemStack stack) {
+        if (player.level().isClientSide() || stack.isEmpty()) return;
 
-        for (int i = 0; i < SatchelInventory.SIZE; i++) {
-            satchelInventory.setItem(i, items.get(i).copy());
+        if (boundStack == stack) {
+            saveToBoundStack();
+            return;
         }
+
+        saveToBoundStack();
+        boundStack = ItemStack.EMPTY;
+        savedSnapshot = List.of();
+
+        if (legacyInventory != null && !stack.has(DataComponents.CONTAINER)) {
+            satchelInventory.deserializeNBT(player.registryAccess(), legacyInventory);
+            legacyInventory = null;
+            boundStack = stack;
+            saveToBoundStack();
+            return;
+        }
+
+        satchelInventory.loadFrom(stack.getOrDefault(DataComponents.CONTAINER, ItemContainerContents.EMPTY));
+        boundStack = stack;
+        savedSnapshot = copyItems();
+    }
+
+    public void unbind() {
+        if (player.level().isClientSide()) return;
+
+        saveToBoundStack();
+        boundStack = ItemStack.EMPTY;
+        savedSnapshot = List.of();
+        satchelInventory.loadFrom(ItemContainerContents.EMPTY);
+    }
+
+    public void onInventoryChanged() {
+        player.getInventory().setChanged();
+        saveToBoundStack();
+    }
+
+    private void saveToBoundStack() {
+        if (player.level().isClientSide() || boundStack.isEmpty() || matchesSnapshot()) return;
+
+        if (satchelInventory.isEmpty()) {
+            boundStack.remove(DataComponents.CONTAINER);
+        } else {
+            boundStack.set(
+                    DataComponents.CONTAINER,
+                    ItemContainerContents.fromItems(satchelInventory.getItems())
+            );
+        }
+
+        savedSnapshot = copyItems();
+    }
+
+    private boolean matchesSnapshot() {
+        List<ItemStack> items = satchelInventory.getItems();
+        if (savedSnapshot.size() != items.size()) return false;
+
+        for (int i = 0; i < items.size(); i++) {
+            if (!ItemStack.matches(savedSnapshot.get(i), items.get(i))) return false;
+        }
+
+        return true;
+    }
+
+    private List<ItemStack> copyItems() {
+        List<ItemStack> snapshot = new ArrayList<>(SatchelInventory.SIZE);
+        for (ItemStack stack : satchelInventory.getItems()) snapshot.add(stack.copy());
+        return snapshot;
+    }
+
+    public void copyFrom(SatchelData original) {
+        active = original.active;
+        legacyInventory = original.legacyInventory == null ? null : original.legacyInventory.copy();
     }
 
     public CompoundTag serializeNBT(HolderLookup.Provider provider) {
         CompoundTag tag = new CompoundTag();
         tag.putBoolean("Active", active);
-        tag.put("Inventory", satchelInventory.serializeNBT(provider));
+        if (legacyInventory != null) tag.put("LegacyInventory", legacyInventory.copy());
         return tag;
     }
 
     public void deserializeNBT(HolderLookup.Provider provider, CompoundTag tag) {
         active = tag.getBoolean("Active");
-        satchelInventory.deserializeNBT(provider, tag.getCompound("Inventory"));
+        legacyInventory = null;
+
+        String key = tag.contains("LegacyInventory", Tag.TAG_COMPOUND)
+                ? "LegacyInventory"
+                : "Inventory";
+
+        if (tag.contains(key, Tag.TAG_COMPOUND)) {
+            CompoundTag oldInventory = tag.getCompound(key);
+            if (!oldInventory.getList("Items", Tag.TAG_COMPOUND).isEmpty()) {
+                legacyInventory = oldInventory.copy();
+            }
+        }
+    }
+
+    public void dropLegacyContents() {
+        if (legacyInventory == null || player.level().isClientSide()) return;
+
+        ListTag list = legacyInventory.getList("Items", Tag.TAG_COMPOUND);
+        for (int i = 0; i < list.size(); i++) {
+            ItemStack.parse(player.registryAccess(), list.getCompound(i))
+                    .ifPresent(stack -> player.drop(stack, true, false));
+        }
+        legacyInventory = null;
     }
 }

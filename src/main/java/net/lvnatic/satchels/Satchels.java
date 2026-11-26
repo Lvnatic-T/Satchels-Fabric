@@ -56,7 +56,7 @@ public final class Satchels implements ModInitializer {
             if (!(entity instanceof ServerPlayer player)) return;
             if (player.level().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY)) return;
 
-            SatchelData.get(player).getSatchelInventory().dropAll(true);
+            SatchelData.get(player).dropLegacyContents();
         });
     }
 

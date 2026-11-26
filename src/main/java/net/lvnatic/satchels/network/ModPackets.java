@@ -109,6 +109,7 @@ public final class ModPackets {
         });
 
         ServerEntityWorldChangeEvents.AFTER_PLAYER_CHANGE_WORLD.register((player, origin, destination) -> {
+            LAST_SYNC.remove(player.getUUID());
             SatchelData data = SatchelData.get(player);
             ServerPlayNetworking.send(player, new SatchelStatusPacketS2C(data.isActive()));
         });

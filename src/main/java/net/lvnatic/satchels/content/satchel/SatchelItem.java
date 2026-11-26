@@ -31,13 +31,21 @@ public final class SatchelItem extends AccessoryItem {
 
     @Override
     public boolean canUnequip(ItemStack stack, SlotReference reference) {
-        if (!super.canUnequip(stack, reference)) return false;
+        return super.canUnequip(stack, reference);
+    }
 
-        if (reference.entity() instanceof Player player) {
-            return SatchelData.get(player).getSatchelInventory().isEmpty();
+    @Override
+    public void onEquip(ItemStack stack, SlotReference reference) {
+        if (reference.entity() instanceof ServerPlayer player) {
+            SatchelData.get(player).bind(stack);
         }
+    }
 
-        return true;
+    @Override
+    public void tick(ItemStack stack, SlotReference reference) {
+        if (reference.entity() instanceof ServerPlayer player) {
+            SatchelData.get(player).bind(stack);
+        }
     }
 
     @Override
@@ -45,6 +53,8 @@ public final class SatchelItem extends AccessoryItem {
         if (!(reference.entity() instanceof ServerPlayer player)) return;
 
         SatchelData data = SatchelData.get(player);
+        data.unbind();
+
         if (!data.isActive()) return;
 
         data.setActive(false, false);
