@@ -10,6 +10,7 @@ import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.lvnatic.satchels.ModItems;
 import net.lvnatic.satchels.ModSounds;
 import net.lvnatic.satchels.api.SatchelAccess;
 import net.lvnatic.satchels.network.packets.SatchelStatusPacketS2C;
@@ -51,6 +52,9 @@ public final class SatchelItem extends AccessoryItem {
     @Override
     public void onUnequip(ItemStack stack, SlotReference reference) {
         if (!(reference.entity() instanceof ServerPlayer player)) return;
+
+        ItemStack equipped = reference.getStack();
+        if (equipped != null && equipped.is(ModItems.SATCHEL)) return;
 
         SatchelData data = SatchelData.get(player);
         data.unbind();

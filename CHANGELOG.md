@@ -6,4 +6,5 @@
 - Dying now drops it with its contents intact _(also fixes compatibility with some Gravestone mods)_
 
 ### Fixes & Miscellaneous
-- Fixed a bug that caused the hotbar to not work properly after switching dimensions with a Satchel activated
+- Shift clicking items from containers no longer puts them into Satchels
+- Fixed a bug causing the hotbar to not work properly after switching dimensions with a Satchel activated
