@@ -1,4 +1,3 @@
-
 package net.lvnatic.satchels.mixin.client.screen;
 
 import net.minecraft.client.OptionInstance;
@@ -25,14 +24,8 @@ public abstract class ControlsScreenMixin extends OptionsSubScreen {
 
         OptionInstance<Integer> offset = new OptionInstance<>(
                 "satchels.options.offset",
-                OptionInstance.cachedConstantTooltip(
-                        Component.translatable("satchels.options.offset.tooltip")
-                ),
-                (component, value) -> Component.translatable(
-                        "satchels.options.offset.selection",
-                        value + 1,
-                        value + 6
-                ),
+                OptionInstance.cachedConstantTooltip(Component.translatable("satchels.options.offset.tooltip")),
+                (component, value) -> Component.translatable("satchels.options.offset.selection", value + 1, value + 6),
                 new OptionInstance.ClampingLazyMaxIntRange(0, () -> 3, 3),
                 SatchelsClientConfig.getSatchelOffset(),
                 SatchelsClientConfig::updateOffset
@@ -40,22 +33,47 @@ public abstract class ControlsScreenMixin extends OptionsSubScreen {
 
         OptionInstance<Boolean> shiftSwap = OptionInstance.createBoolean(
                 "satchels.options.shift_swap",
-                OptionInstance.cachedConstantTooltip(
-                        Component.translatable("satchels.options.shift_swap.tooltip")
-                ),
+                OptionInstance.cachedConstantTooltip(Component.translatable("satchels.options.shift_swap.tooltip")),
                 SatchelsClientConfig.shouldSwapWithShiftKey(),
                 SatchelsClientConfig::updateShiftSwap
         );
 
+        OptionInstance<Integer> pickupMode = new OptionInstance<>(
+                "satchels.options.pickup_mode",
+                OptionInstance.cachedConstantTooltip(Component.translatable("satchels.options.pickup_mode.tooltip")),
+                (component, value) -> Component.translatable("satchels.options.pickup_mode." + switch (value) {
+                    case 0 -> "off";
+                    case 2 -> "prioritize";
+                    default -> "overflow";
+                }),
+                new OptionInstance.ClampingLazyMaxIntRange(0, () -> 2, 2),
+                SatchelsClientConfig.getPickupModeIndex(),
+                SatchelsClientConfig::updatePickupMode
+        );
+
         OptionInstance<Boolean> guiAnimation = OptionInstance.createBoolean(
                 "satchels.options.gui_animation",
-                OptionInstance.cachedConstantTooltip(
-                        Component.translatable("satchels.options.gui_animation.tooltip")
-                ),
+                OptionInstance.cachedConstantTooltip(Component.translatable("satchels.options.gui_animation.tooltip")),
                 SatchelsClientConfig.shouldAnimateGUI(),
                 SatchelsClientConfig::updateGuiAnimation
         );
 
-        this.list.addSmall(offset, shiftSwap, guiAnimation);
+        OptionInstance<Integer> animationDuration = new OptionInstance<>(
+                "satchels.options.animation_duration",
+                OptionInstance.cachedConstantTooltip(Component.translatable("satchels.options.animation_duration.tooltip")),
+                (component, value) -> Component.translatable("satchels.options.animation_duration.selection", value * 50),
+                new OptionInstance.IntRange(2, 20),
+                SatchelsClientConfig.getAnimationDuration() / 50,
+                SatchelsClientConfig::updateAnimationDuration
+        );
+
+        OptionInstance<Boolean> toggleMessages = OptionInstance.createBoolean(
+                "satchels.options.toggle_messages",
+                OptionInstance.cachedConstantTooltip(Component.translatable("satchels.options.toggle_messages.tooltip")),
+                SatchelsClientConfig.shouldShowToggleMessages(),
+                SatchelsClientConfig::updateToggleMessages
+        );
+
+        this.list.addSmall(offset, shiftSwap, pickupMode, guiAnimation, animationDuration, toggleMessages);
     }
 }

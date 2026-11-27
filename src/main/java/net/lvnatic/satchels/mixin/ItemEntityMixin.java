@@ -7,6 +7,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.lvnatic.satchels.content.satchel.SatchelData;
 import net.lvnatic.satchels.content.satchel.SatchelInventory;
+import net.lvnatic.satchels.content.satchel.SatchelPickupMode;
 import net.lvnatic.satchels.content.satchel.SatchelStorageRules;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -23,13 +24,24 @@ public abstract class ItemEntityMixin {
     )
     private boolean satchels$pickup(Inventory inventory, ItemStack stack, Operation<Boolean> original) {
         SatchelData data = SatchelData.get(inventory.player);
+        SatchelPickupMode mode = data.getPickupMode();
 
-        if (!data.canAccess() || stack.isEmpty() || !SatchelStorageRules.canStore(stack)) {
+        if (mode == SatchelPickupMode.OFF || !data.canAccess() || stack.isEmpty()
+                || !SatchelStorageRules.canStore(stack)) {
             return original.call(inventory, stack);
         }
 
         SatchelInventory satchel = data.getSatchelInventory();
         int originalCount = stack.getCount();
+
+        if (mode == SatchelPickupMode.OVERFLOW) {
+            boolean pickedUp = original.call(inventory, stack);
+            if (!stack.isEmpty()) {
+                satchels$mergeExisting(satchel, stack);
+                satchels$fillEmpty(satchel, stack);
+            }
+            return pickedUp || stack.getCount() < originalCount;
+        }
 
         satchels$mergeExisting(satchel, stack);
 
@@ -38,7 +50,6 @@ public abstract class ItemEntityMixin {
         }
 
         boolean vanillaPickup = false;
-
         if (!stack.isEmpty()) {
             vanillaPickup = original.call(inventory, stack);
         }
@@ -64,7 +75,6 @@ public abstract class ItemEntityMixin {
             if (available <= 0) continue;
 
             int amount = Math.min(available, incoming.getCount());
-
             stored.grow(amount);
             incoming.shrink(amount);
             stored.setPopTime(5);

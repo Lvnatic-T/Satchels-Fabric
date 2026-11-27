@@ -8,24 +8,32 @@ import net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.LivingEntityFeatureRendererRegistrationCallback;
+import net.fabricmc.fabric.api.client.rendering.v1.TooltipComponentCallback;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
+import net.minecraft.core.NonNullList;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.DyedItemColor;
+import net.minecraft.world.item.component.ItemContainerContents;
 import net.lvnatic.satchels.ModItems;
 import net.lvnatic.satchels.Satchels;
 import net.lvnatic.satchels.api.SatchelAccess;
 import net.lvnatic.satchels.client.model.SatchelLayer;
+import net.lvnatic.satchels.client.tooltip.ClientSatchelTooltip;
+import net.lvnatic.satchels.client.tooltip.SatchelTooltipData;
 import net.lvnatic.satchels.content.satchel.SatchelData;
 import net.lvnatic.satchels.content.satchel.SatchelInventory;
 import net.lvnatic.satchels.content.satchel.SatchelItem;
 import net.lvnatic.satchels.network.packets.SatchelInventorySyncPacketS2C;
 import net.lvnatic.satchels.network.packets.SatchelOffsetUpdatePacketC2S;
+import net.lvnatic.satchels.network.packets.SatchelPickupModePacketC2S;
 import net.lvnatic.satchels.network.packets.SatchelStatusPacketS2C;
 import net.lvnatic.satchels.network.packets.ToggleSatchelPacketC2S;
 import org.lwjgl.glfw.GLFW;
@@ -38,9 +46,7 @@ public final class SatchelsClient implements ClientModInitializer {
     public void onInitializeClient() {
         SatchelsClientConfig.load();
 
-        ModelLoadingPlugin.register(context ->
-                context.addModels(Satchels.at("item/satchel_worn"))
-        );
+        ModelLoadingPlugin.register(context -> context.addModels(Satchels.at("item/satchel_worn")));
 
         LivingEntityFeatureRendererRegistrationCallback.EVENT.register((entityType, renderer, registrationHelper, context) -> {
             if (renderer instanceof PlayerRenderer playerRenderer) {
@@ -67,22 +73,29 @@ public final class SatchelsClient implements ClientModInitializer {
                 KeyMapping.CATEGORY_INVENTORY
         ));
 
+        TooltipComponentCallback.EVENT.register(data ->
+                data instanceof SatchelTooltipData satchel
+                        ? new ClientSatchelTooltip(satchel.contents(), satchel.color())
+                        : null
+        );
+
         ItemTooltipCallback.EVENT.register((stack, context, type, tooltip) -> {
             if (!stack.is(ModItems.SATCHEL)) return;
 
-            tooltip.add(
-                    Component.translatable("tooltip.satchels.storage")
-                            .withStyle(ChatFormatting.GRAY)
-            );
+            tooltip.add(Component.translatable("tooltip.satchels.storage").withStyle(ChatFormatting.GRAY));
+            tooltip.add(Component.translatable(
+                    "tooltip.satchels.toggle",
+                    toggleSatchel.getTranslatedKeyMessage().copy().withStyle(ChatFormatting.YELLOW)
+            ).withStyle(ChatFormatting.GRAY));
 
-            tooltip.add(
-                    Component.translatable(
-                            "tooltip.satchels.toggle",
-                            toggleSatchel.getTranslatedKeyMessage()
-                                    .copy()
-                                    .withStyle(ChatFormatting.YELLOW)
-                    ).withStyle(ChatFormatting.GRAY)
-            );
+            ItemContainerContents contents = stack.getOrDefault(DataComponents.CONTAINER, ItemContainerContents.EMPTY);
+            NonNullList<ItemStack> items = NonNullList.withSize(SatchelInventory.SIZE, ItemStack.EMPTY);
+            contents.copyInto(items);
+            if (items.stream().allMatch(ItemStack::isEmpty)) return;
+
+            if (!Screen.hasShiftDown()) {
+                tooltip.add(Component.translatable("tooltip.satchels.contents_hint").withStyle(ChatFormatting.DARK_GRAY));
+            }
         });
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
@@ -93,6 +106,7 @@ public final class SatchelsClient implements ClientModInitializer {
                     int offset = SatchelsClientConfig.getSatchelOffset();
                     SatchelData.get(client.player).setHotbarOffset(offset);
                     ClientPlayNetworking.send(new SatchelOffsetUpdatePacketC2S(offset));
+                    ClientPlayNetworking.send(new SatchelPickupModePacketC2S(SatchelsClientConfig.getPickupModeIndex()));
                 }
             }
 
@@ -112,10 +126,9 @@ public final class SatchelsClient implements ClientModInitializer {
 
                     SatchelData data = SatchelData.get(context.client().player);
                     boolean changed = data.isActive() != packet.enabled();
-
                     data.setActive(packet.enabled(), false);
 
-                    if (changed) {
+                    if (changed && SatchelsClientConfig.shouldShowToggleMessages()) {
                         context.client().player.displayClientMessage(
                                 Component.translatable(packet.enabled()
                                         ? "message.satchels.activated"
@@ -132,7 +145,6 @@ public final class SatchelsClient implements ClientModInitializer {
                     if (packet.items().size() != SatchelInventory.SIZE) return;
 
                     SatchelInventory inventory = SatchelData.get(context.client().player).getSatchelInventory();
-
                     for (int i = 0; i < SatchelInventory.SIZE; i++) {
                         inventory.setItem(i, packet.items().get(i).copy());
                     }

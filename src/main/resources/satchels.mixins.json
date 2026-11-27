@@ -25,6 +25,7 @@
     "client.GuiMixin",
     "client.SatchelMessageDurationMixin",
     "client.PickBlockMixin",
+    "client.ItemStackTooltipMixin",
     "compat.SophisticatedCoreScreenMixin"
   ],
   "injectors": {

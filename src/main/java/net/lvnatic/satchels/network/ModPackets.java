@@ -11,8 +11,10 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.lvnatic.satchels.content.satchel.SatchelData;
 import net.lvnatic.satchels.content.satchel.SatchelInventorySlot;
+import net.lvnatic.satchels.content.satchel.SatchelPickupMode;
 import net.lvnatic.satchels.network.packets.SatchelInventorySyncPacketS2C;
 import net.lvnatic.satchels.network.packets.SatchelOffsetUpdatePacketC2S;
+import net.lvnatic.satchels.network.packets.SatchelPickupModePacketC2S;
 import net.lvnatic.satchels.network.packets.SatchelStatusPacketS2C;
 import net.lvnatic.satchels.network.packets.SwapSatchelHotbarPacketC2S;
 import net.lvnatic.satchels.network.packets.ToggleSatchelPacketC2S;
@@ -35,6 +37,11 @@ public final class ModPackets {
         PayloadTypeRegistry.playC2S().register(
                 SatchelOffsetUpdatePacketC2S.TYPE,
                 SatchelOffsetUpdatePacketC2S.STREAM_CODEC
+        );
+
+        PayloadTypeRegistry.playC2S().register(
+                SatchelPickupModePacketC2S.TYPE,
+                SatchelPickupModePacketC2S.STREAM_CODEC
         );
 
         PayloadTypeRegistry.playC2S().register(
@@ -63,6 +70,10 @@ public final class ModPackets {
 
         ServerPlayNetworking.registerGlobalReceiver(SatchelOffsetUpdatePacketC2S.TYPE, (packet, context) ->
                 SatchelData.get(context.player()).setHotbarOffset(packet.offset())
+        );
+
+        ServerPlayNetworking.registerGlobalReceiver(SatchelPickupModePacketC2S.TYPE, (packet, context) ->
+                SatchelData.get(context.player()).setPickupMode(SatchelPickupMode.fromId(packet.mode()))
         );
 
         ServerPlayNetworking.registerGlobalReceiver(SwapSatchelHotbarPacketC2S.TYPE, (packet, context) -> {

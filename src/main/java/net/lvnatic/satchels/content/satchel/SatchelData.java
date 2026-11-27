@@ -25,6 +25,7 @@ public final class SatchelData {
     private CompoundTag legacyInventory;
     private int hotbarOffset;
     private boolean active;
+    private SatchelPickupMode pickupMode = SatchelPickupMode.OVERFLOW;
 
     public SatchelData(Player player) {
         this.player = player;
@@ -73,6 +74,14 @@ public final class SatchelData {
 
     public int convertToSatchelIndex(int slot) {
         return slot - hotbarOffset;
+    }
+
+    public SatchelPickupMode getPickupMode() {
+        return pickupMode;
+    }
+
+    public void setPickupMode(SatchelPickupMode mode) {
+        pickupMode = mode;
     }
 
     public boolean isActive() {
@@ -169,6 +178,7 @@ public final class SatchelData {
 
     public void copyFrom(SatchelData original) {
         active = original.active;
+        pickupMode = original.pickupMode;
         legacyInventory = original.legacyInventory == null ? null : original.legacyInventory.copy();
     }
 

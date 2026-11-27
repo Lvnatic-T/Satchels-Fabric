@@ -51,7 +51,8 @@ public abstract class GuiMixin {
             return;
         }
 
-        float progress = Math.clamp((now - satchels$animationStart) / 300.0f, 0.0f, 1.0f);
+        float progress = Math.clamp((now - satchels$animationStart)
+                / (float) SatchelsClientConfig.getAnimationDuration(), 0.0f, 1.0f);
         float easing = progress >= 1.0f
                 ? 1.0f
                 : 1.0f - (float) Math.pow(2.0, -10.0 * progress);
@@ -177,9 +178,7 @@ public abstract class GuiMixin {
             }
 
             graphics.renderItem(player, stack, itemX, itemY, i + 1);
-
             if (pop > 0.0f) graphics.pose().popPose();
-
             graphics.renderItemDecorations(minecraft.font, stack, itemX, itemY);
         }
 
