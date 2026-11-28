@@ -36,7 +36,7 @@ Carry six extra stacks of items. Your Satchel slots appear alongside your invent
 ---
 
 ### Seamless hotbar Swapping:
-Press `V` _(configurable)_ to switch between your normal hotbar and the Satchel hotbar. Use the items in your Satchel just like items in your regular hotbar, and use`Shift` + `hotbar key` in inventory screens to swap items directly with Satchel slots.
+Press `V` _(configurable)_ to switch between your normal hotbar and the Satchel hotbar. Use the items in your Satchel just like items in your regular hotbar, and use `Shift` + `hotbar key` in inventory screens to swap items directly with Satchel slots.
 
 <img src="https://cdn.modrinth.com/data/cached_images/1aaed0540fab82f17626d3bd0ffc36bcaebdd2a4.gif" alt="Hotbar toggle demonstration2" width="55%">
 
@@ -117,7 +117,7 @@ All Satchel settings are available under `ESC` → `Options` → `Controls` & ar
 | `Shift` + <br/>`Hotbar Key`     | Swap an item with the corresponding Satchel slot while an inventory is open                                                    |
 | `Shift` <br/>_(while hovering)_ | Preview the contents of a filled Satchel                                                                                       |
 | Satchel Position                | Choose one of four positions for the Satchel hotbar slots                                                                      |
-| Shift + Hotbar Swap             | Enable or disable the Shift + hotbar-key shortcut                                                                              |
+| Shift + <br/>Hotbar Swap        | Enable or disable the Shift + hotbar-key shortcut                                                                              |
 | Satchel Animations              | Enable or disable the sliding hotbar animation                                                                                 |
 | Animation Duration              | Customize the speed of the Satchel hotbar animation                                                                            |
 | Toggle Messages                 | Enable or disable the Satchel activation/deactivation messages                                                                 |

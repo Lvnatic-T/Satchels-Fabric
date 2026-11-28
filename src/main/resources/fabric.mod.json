@@ -11,7 +11,7 @@
     "sources": "https://github.com/Lvnatic-T/Satchels-Fabric",
     "issues": "https://github.com/Lvnatic-T/Satchels-Fabric/issues"
   },
-  "license": "MIT",
+  "license": "Lvnatics General License",
   "icon": "icon.png",
   "environment": "*",
   "entrypoints": {
